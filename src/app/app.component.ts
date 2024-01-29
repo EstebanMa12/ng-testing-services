@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 
+import { Calculator } from './calculator';
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -11,4 +13,9 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'ng-testing-services';
+
+  ngOnInit() {
+    const calculator = new Calculator();
+    
+  }
 }
