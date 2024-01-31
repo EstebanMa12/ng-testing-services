@@ -3,8 +3,11 @@
   <div>
     @for( product of products; track product; let i= $index){
         <figure>
-          <img [src]="product.images[0]">
-
+          <img src="https://picsum.photos/id/{{product.id}}/400/?blur" >
+          <figcaption>
+            <h2>{{product.title}}</h2>
+            <p>{{product.price }}</p>
+          </figcaption>
         </figure>
       }
 
