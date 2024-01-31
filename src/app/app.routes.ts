@@ -4,8 +4,10 @@ import { PicoPreviewComponent } from './components/pico-preview/pico-preview.com
 
 
 export const routes: Routes = [
-  { path: 'products', component: ProductsComponent },
-  { path: 'pico-preview/', component: PicoPreviewComponent }
+  { path: 'products',
+    component: ProductsComponent },
+  { path: 'pico-preview',
+    component: PicoPreviewComponent }
 ];
 
 

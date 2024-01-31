@@ -96,8 +96,7 @@
             ],
             "styles": [
               "src/styles.sass",
-              "node_modules/@picocss/pico/css/pico.min.css",
-              "node_modules/@picocss/pico/scss/pico.slim.scss"
+              "node_modules/@picocss/pico/css/pico.min.css"
             ],
             "scripts": [],
             "karmaConfig": "karma.conf.js"
