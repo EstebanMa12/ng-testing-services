@@ -11,7 +11,7 @@ import { environment } from './../../environments/environment';
 })
 export class ProductsService {
 
-  private apiUrl = `${environment.API_URL}/api`;
+  private apiUrl = `${environment.API_URL}/api/v1`;
 
   constructor(
     private http: HttpClient
@@ -24,6 +24,10 @@ export class ProductsService {
       params = params.set('offset', offset);
     }
     return this.http.get<Product[]>(`${this.apiUrl}/categories/${categoryId}/products`, { params })
+  }
+
+  getAllSimple(){
+    return this.http.get<Product[]>(`${this.apiUrl}/products`);
   }
 
   getAll(limit?: number, offset?: number) {
