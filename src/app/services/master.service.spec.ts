@@ -1,6 +1,7 @@
 
 import { MasterService } from './master.service';
 import { ValueService } from './value.service';
+import { FakeValueService } from './value-fake.service';
 
 describe('MasterService', () => {
 
@@ -9,6 +10,12 @@ describe('MasterService', () => {
     const masterService  = new MasterService(valueService);
 
     expect(masterService.getValue()).toBe('my value');
+  });
 
+  it('should return "other value" from the fake service' , () => {
+    const fakeValueService = new FakeValueService();
+    const masterService  = new MasterService(fakeValueService as unknown as ValueService);
+
+    expect(masterService.getValue()).toBe('fake value');
   });
 });
