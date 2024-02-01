@@ -1,12 +1,16 @@
 import { Product } from './../../models/product.model';
 import { Component } from '@angular/core';
 import { ProductsService } from '../../services/product.service';
+import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.sass'
 })

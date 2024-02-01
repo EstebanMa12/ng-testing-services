@@ -1,15 +1,14 @@
 <section class="container">
   <h1> Products Component</h1>
-  <div>
+  <div class="my-grid">
     @for( product of products; track product; let i= $index){
         <figure>
-          <img src="https://picsum.photos/id/{{product.id}}/400/?blur" >
+          <img [src]="product.images[0]" >
           <figcaption>
             <h2>{{product.title}}</h2>
             <p>{{product.price }}</p>
           </figcaption>
         </figure>
       }
-
   </div>
 </section>
