@@ -83,7 +83,16 @@ fdescribe('ProductsService', () => {
         {
           ...generateOneProduct(),
           price: 300, // 57 de impuestos
-        }
+        },
+        // Pruebas maliciosas para ver si el servicio está haciendo bien su trabajo
+        {
+          ...generateOneProduct(),
+          price: 0, // 0 de impuestos
+        },
+        {
+          ...generateOneProduct(),
+          price: -100, // 0 de impuestos
+        },
       ]
       // Act
       productService.getAll()
@@ -93,8 +102,11 @@ fdescribe('ProductsService', () => {
         expect(data[0].taxes).toEqual(19);
         expect(data[1].taxes).toEqual(38);
         expect(data[2].taxes).toEqual(57);
+        expect(data[3].taxes).toEqual(0);
+        expect(data[4].taxes).toEqual(0);
         doneFn();
       });
+
 
       // http config
       const url = `${environment.API_URL}/api/v1/products`;
@@ -104,6 +116,33 @@ fdescribe('ProductsService', () => {
       // Verificar que no hay mas peticiones pendientes
       httpTestingController.verify();
 
+
+    });
+
+    it('should send query params with limit 10 and offset 2', (doneFn)=>{
+      const mockData: Product[] = generateManyProducts(3);
+      const limit = 10;
+      const offset = 2;
+      // Act
+      productService.getAll(limit, offset)
+      .subscribe((data)=>{
+        //Assert
+        expect(data.length).toEqual(mockData.length);
+        doneFn();
+      });
+
+      // http config
+      const url = `${environment.API_URL}/api/v1/products?limit=${limit}&offset=${offset}`;
+      const req = httpTestingController.expectOne(url);
+      // Montar el mock de datos
+      req.flush(mockData);
+      const params = req.request.params;
+
+      expect(params.get('limit')).toEqual(limit.toString());
+      expect(params.get('offset')).toEqual(offset.toString());
+
+      // Verificar que no hay mas peticiones pendientes
+      httpTestingController.verify();
 
     })
   })

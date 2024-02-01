@@ -54,8 +54,8 @@ export class ProductsService {
       map(products => products.map(item => {
         return {
           ...item,
-          taxes: .19 * item.price
-        }
+          taxes: item.price > 0? .19 * item.price : 0
+         }
       }))
     );
   }
@@ -72,15 +72,17 @@ export class ProductsService {
     .pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === HttpStatusCode.Conflict) {
-          return throwError('Algo esta fallando en el server');
+          return new Observable(subscriber => {
+            subscriber.error('Algo esta fallando en el servidor');
+          })
         }
         if (error.status === HttpStatusCode.NotFound) {
-          return throwError('El producto no existe');
+          return throwError(()=> new Error('No se encontro el producto'))
         }
         if (error.status === HttpStatusCode.Unauthorized) {
-          return throwError('No estas permitido');
+          return throwError(()=> new Error('No tienes permisos para ver este producto'))
         }
-        return throwError('Ups algo salio mal');
+        return throwError(()=> new Error('Ups! Algo salio mal'));
       })
     )
   }
