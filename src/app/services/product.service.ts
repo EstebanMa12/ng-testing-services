@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { retry, catchError, map } from 'rxjs/operators';
-import { throwError, zip } from 'rxjs';
+import { Observable, throwError, zip } from 'rxjs';
 
 import { Product, CreateProductDTO, UpdateProductDTO } from './../models/product.model';
 import { environment } from './../../environments/environment';
@@ -31,7 +31,16 @@ export class ProductsService {
     return this.http.get<Product[]>(`${this.apiUrl}/products`);
   }
 
-  getAll(limit?: number, offset?: number) {
+  /**
+   * Retrieves all products.
+   *
+   * @param limit - The maximum number of products to retrieve.
+   * @param offset - The number of products to skip before starting to retrieve.
+   * @returns An Observable that emits an array of products.
+   */
+
+  // Lo que hace Observable<Product[]> es que le dice al tipado que no importa el cambio que se haga, esto siempre va a ser un array de productos y no va a cambiar.
+  getAll(limit?: number, offset?: number): Observable<Product[]> {
     let params = new HttpParams();
     if (limit && offset != null) {
       params = params.set('limit', limit);
@@ -39,7 +48,9 @@ export class ProductsService {
     }
     return this.http.get<Product[]>(`${this.apiUrl}/products`, { params })
     .pipe(
+      // Si algo sale mal, reintentar 3 veces
       retry(3),
+
       map(products => products.map(item => {
         return {
           ...item,

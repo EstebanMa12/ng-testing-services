@@ -3,7 +3,7 @@ import { ProductsService } from "./product.service";
 import { HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import { Product } from "../models/product.model";
 import { environment } from "../../environments/environment";
-import { generateManyProducts } from "../models/product.mock";
+import { generateManyProducts, generateOneProduct } from "../models/product.mock";
 fdescribe('ProductsService', () => {
   let productService: ProductsService;
   let httpTestingController: HttpTestingController;
@@ -46,5 +46,66 @@ fdescribe('ProductsService', () => {
       httpTestingController.verify();
     })
   });
+
+  describe('tests for getAll', () => {
+    it('should return a product list',(doneFn)=>{
+      //Arrange
+      // * Esto es lo que yo voy a suponer que el servidor me va a devolver
+      const mockData: Product[] = generateManyProducts(3);
+      //Act
+      productService.getAll()
+      .subscribe((data)=>{
+        //Assert
+        expect(data.length).toEqual(mockData.length);
+        // expect(data).toEqual(mockData);// Es normal que falle este test, ya que el servicio está modificando los datos que recibe del servidor. Entonces uno tiene los taxes mientras que otro no.
+        doneFn();
+      });
+
+      // http config
+      const url = `${environment.API_URL}/api/v1/products`;
+      const req = httpTestingController.expectOne(url);
+      // Montar el mock de datos
+      req.flush(mockData);
+      // Verificar que no hay mas peticiones pendientes
+      httpTestingController.verify();
+    })
+
+    it('should return product list with taxes', (doneFn)=>{
+      const mockData: Product[] = [
+        {
+          ...generateOneProduct(),
+          price: 100, // 19 de impuestos
+        },
+        {
+          ...generateOneProduct(),
+          price: 200, // 38 de impuestos
+        },
+        {
+          ...generateOneProduct(),
+          price: 300, // 57 de impuestos
+        }
+      ]
+      // Act
+      productService.getAll()
+      .subscribe((data)=>{
+        //Assert
+        expect(data.length).toEqual(mockData.length);
+        expect(data[0].taxes).toEqual(19);
+        expect(data[1].taxes).toEqual(38);
+        expect(data[2].taxes).toEqual(57);
+        doneFn();
+      });
+
+      // http config
+      const url = `${environment.API_URL}/api/v1/products`;
+      const req = httpTestingController.expectOne(url);
+      // Montar el mock de datos
+      req.flush(mockData);
+      // Verificar que no hay mas peticiones pendientes
+      httpTestingController.verify();
+
+
+    })
+  })
 
 });
