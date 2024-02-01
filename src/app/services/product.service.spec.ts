@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 import { ProductsService } from "./product.service";
 import { HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import { Product } from "../models/product.model";
+import { CreateProductDTO, Product } from "../models/product.model";
 import { environment } from "../../environments/environment";
 import { generateManyProducts, generateOneProduct } from "../models/product.mock";
 fdescribe('ProductsService', () => {
@@ -143,6 +143,65 @@ fdescribe('ProductsService', () => {
 
       // Verificar que no hay mas peticiones pendientes
       httpTestingController.verify();
+
+    })
+
+    it('shloud send query params with limit 10 and offset 0 ', (doneFn)=>{
+      const mockData: Product[] = generateManyProducts(3);
+      const limit = 10;
+      const offset = 0;
+      // Act
+      productService.getAll(limit, offset)
+      .subscribe((data)=>{
+        //Assert
+        expect(data.length).toEqual(mockData.length);
+        doneFn();
+      });
+
+      // http config
+      const url = `${environment.API_URL}/api/v1/products?limit=${limit}&offset=${offset}`;
+      const req = httpTestingController.expectOne(url);
+      // Montar el mock de datos
+      req.flush(mockData);
+      const params = req.request.params;
+
+      expect(params.get('limit')).toEqual(limit.toString());
+      expect(params.get('offset')).toEqual(offset.toString());
+
+      // Verificar que no hay mas peticiones pendientes
+      httpTestingController.verify();
+    })
+  })
+
+  describe('tests for creaye()', () => {
+    it('should return a new product', (doneFn)=>{
+      //Arrange
+      const mockData = generateOneProduct();
+      const dto: CreateProductDTO ={
+        title:'title',
+        price: 100,
+        description: 'description',
+        categoryId: 12,
+        images: ['image1', 'image2']
+      }
+      // Act
+      productService.create(dto)
+      .subscribe((data)=>{
+        //Assert
+        expect(data).toEqual(mockData);
+        doneFn();
+      });
+
+      // http config
+      const url = `${environment.API_URL}/api/v1/products`;
+      const req = httpTestingController.expectOne(url);
+      // Montar el mock de datos
+      req.flush(mockData);
+
+      expect(req.)
+      // Verificar que no hay mas peticiones pendientes
+      httpTestingController.verify();
+
 
     })
   })
