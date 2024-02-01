@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
 import { ProductsService } from "./product.service";
 import { HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import { CreateProductDTO, Product } from "../models/product.model";
+import { CreateProductDTO, Product, UpdateProductDTO } from "../models/product.model";
 import { environment } from "../../environments/environment";
 import { generateManyProducts, generateOneProduct } from "../models/product.mock";
 fdescribe('ProductsService', () => {
@@ -16,8 +16,13 @@ fdescribe('ProductsService', () => {
     productService = TestBed.inject(ProductsService);
     httpTestingController = TestBed.inject(HttpTestingController);
   });
+  afterEach(()=>{
+    // Verificar que no hay mas peticiones pendientes
+    httpTestingController.verify();
+  })
 
   it('should be created', () => {
+
     expect(productService).toBeTruthy();
   });
 
@@ -42,8 +47,7 @@ fdescribe('ProductsService', () => {
       const req = httpTestingController.expectOne(url);
       // Montar el mock de datos
       req.flush(mockData);
-      // Verificar que no hay mas peticiones pendientes
-      httpTestingController.verify();
+
     })
   });
 
@@ -113,10 +117,6 @@ fdescribe('ProductsService', () => {
       const req = httpTestingController.expectOne(url);
       // Montar el mock de datos
       req.flush(mockData);
-      // Verificar que no hay mas peticiones pendientes
-      httpTestingController.verify();
-
-
     });
 
     it('should send query params with limit 10 and offset 2', (doneFn)=>{
@@ -173,7 +173,7 @@ fdescribe('ProductsService', () => {
     })
   })
 
-  describe('tests for creaye()', () => {
+  describe('tests for create()', () => {
     it('should return a new product', (doneFn)=>{
       //Arrange
       const mockData = generateOneProduct();
@@ -185,7 +185,7 @@ fdescribe('ProductsService', () => {
         images: ['image1', 'image2']
       }
       // Act
-      productService.create(dto)
+      productService.create({...dto})
       .subscribe((data)=>{
         //Assert
         expect(data).toEqual(mockData);
@@ -198,11 +198,63 @@ fdescribe('ProductsService', () => {
       // Montar el mock de datos
       req.flush(mockData);
 
-      expect(req.)
-      // Verificar que no hay mas peticiones pendientes
-      httpTestingController.verify();
+      expect(req.request.body).toEqual(dto);
+      expect(req.request.method).toEqual('POST');
+    })
+  })
 
+  describe('test for update()',()=>{
+    it('should return the updated product', (doneFn)=>{
+      // Arrange
+      const mockData = generateOneProduct();
+      const productId = '123';
+      const dto: UpdateProductDTO = {
+        title:'title',
+        price: 100,
+        description: 'description',
+        categoryId: 12,
+        images: ['image1', 'image2']
+      };
 
+      productService.update(productId, dto)
+      .subscribe((data)=>{
+        //Assert
+        expect(data).toEqual(mockData);
+        doneFn();
+      })
+
+      // http config
+      const url = `${environment.API_URL}/api/v1/products/${productId}`;
+      const req = httpTestingController.expectOne(url);
+      // Montar el mock de datos
+      req.flush(mockData);
+
+      expect(req.request.body).toEqual(dto);
+      expect(req.request.method).toEqual('PUT');
+    })
+
+  })
+
+  describe('test for delete()',()=>{
+    it('should return the deleted product', (doneFn)=>{
+      // Arrange
+      const mockData = generateOneProduct();
+      const productId = '123';
+
+      productService.delete(productId)
+      .subscribe((data)=>{
+        //Assert
+        expect(data).toBe(true)
+        doneFn();
+      })
+
+      // http config
+      const url = `${environment.API_URL}/api/v1/products/${productId}`;
+      const req = httpTestingController.expectOne(url);
+      // Montar el mock de datos
+      req.flush(mockData);
+
+      expect(req.request.method).toEqual('DELETE');
     })
   })
 
