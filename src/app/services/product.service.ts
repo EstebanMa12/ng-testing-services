@@ -72,17 +72,15 @@ export class ProductsService {
     .pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === HttpStatusCode.Conflict) {
-          return new Observable(subscriber => {
-            subscriber.error('Algo esta fallando en el servidor');
-          })
+          return throwError(()=> 'Algo esta fallando en el servidor')
         }
         if (error.status === HttpStatusCode.NotFound) {
-          return throwError(()=> new Error('No se encontro el producto'))
+          return throwError(()=>'No se encontro el producto')
         }
         if (error.status === HttpStatusCode.Unauthorized) {
-          return throwError(()=> new Error('No tienes permisos para ver este producto'))
+          return throwError(()=> 'No tienes permisos para ver este producto')
         }
-        return throwError(()=> new Error('Ups! Algo salio mal'));
+        return throwError(()=> 'Ups! Algo salio mal');
       })
     )
   }

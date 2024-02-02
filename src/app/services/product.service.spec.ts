@@ -4,6 +4,7 @@ import { HttpClientTestingModule, HttpTestingController} from "@angular/common/h
 import { CreateProductDTO, Product, UpdateProductDTO } from "../models/product.model";
 import { environment } from "../../environments/environment";
 import { generateManyProducts, generateOneProduct } from "../models/product.mock";
+import test from "node:test";
 fdescribe('ProductsService', () => {
   let productService: ProductsService;
   let httpTestingController: HttpTestingController;
@@ -252,6 +253,82 @@ fdescribe('ProductsService', () => {
 
       expect(req.request.method).toEqual('DELETE');
     })
+  })
+
+  describe('test for getOne()',()=>{
+    it('should return a product', (doneFn)=>{
+      // Arrange
+      const mockData = generateOneProduct();
+      const productId = '123';
+      // Act
+      productService.getOne(productId)
+      .subscribe((data)=>{
+        //Assert
+        expect(data).toEqual(mockData);
+        doneFn();
+      })
+
+      // http config
+      const url = `${environment.API_URL}/api/v1/products/${productId}`;
+      const req = httpTestingController.expectOne(url);
+      // Montar el mock de datos
+      req.flush(mockData);
+
+      expect(req.request.method).toEqual('GET');
+    })
+
+    it('should return the right msg when the status code is 404', (doneFn)=>{
+      // Arrange
+      const productId = '123';
+      const msgError = 'Product not found';
+      const mockError = {
+        status: 404,
+        statusText: msgError
+      }
+      // Act
+      productService.getOne(productId)
+      .subscribe({
+        error: (error)=>{
+          //Assert
+          expect(error).toEqual('No se encontro el producto');
+          doneFn();
+        }
+      })
+      // http config
+      const url = `${environment.API_URL}/api/v1/products/${productId}`;
+      const req = httpTestingController.expectOne(url);
+      // Montar el mock de datos
+
+      expect(req.request.method).toEqual('GET');
+      req.flush(msgError, mockError);
+    })
+
+    it('Should return the right msg when the status code is 409',(doneFn) => {
+    //Arrange
+      const productId = '1';
+      const msgError = 'Server Fail';
+      const mockError = {
+        status: 409,
+        statusText: msgError
+      }
+    //Act
+    productService.getOne(productId)
+    .subscribe({
+      error: (error)=>{
+        //Assert
+        expect(error).toEqual('Algo esta fallando en el servidor');
+        doneFn();
+      }
+    })
+    // http config
+    const url = `${environment.API_URL}/api/v1/products/${productId}`;
+    const req = httpTestingController.expectOne(url);
+    // Montar el mock de datos
+    expect(req.request.method).toEqual('GET');
+    req.flush(msgError, mockError);
+    });
+
+
   })
 
 });
