@@ -10,7 +10,7 @@ import { TokenService } from "./token.service";
 fdescribe('ProductsService', () => {
   let productService: ProductsService;
   let httpTestingController: HttpTestingController;
-
+  let tokenService : TokenService;
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -26,6 +26,7 @@ fdescribe('ProductsService', () => {
     });
     productService = TestBed.inject(ProductsService);
     httpTestingController = TestBed.inject(HttpTestingController);
+    tokenService = TestBed.inject(TokenService);
   });
   afterEach(() => {
     // Verificar que no hay mas peticiones pendientes
@@ -43,6 +44,7 @@ fdescribe('ProductsService', () => {
       // * Esto es lo que yo voy a suponer que el servidor me va a devolver
 
       const mockData: Product[] = generateManyProducts(2);
+      spyOn(tokenService, 'getToken').and.returnValue('123');
       //Act
       productService.getAllSimple()
         .subscribe((data) => {
@@ -57,6 +59,7 @@ fdescribe('ProductsService', () => {
       const url = `${environment.API_URL}/api/v1/products`;
       const req = httpTestingController.expectOne(url);
       // Montar el mock de datos
+      expect(req.request.headers.get('Authorization')).toEqual('Bearer 123');
       req.flush(mockData);
 
     })
