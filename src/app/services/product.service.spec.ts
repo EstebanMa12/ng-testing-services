@@ -6,6 +6,7 @@ import { environment } from "../../environments/environment";
 import { generateManyProducts, generateOneProduct } from "../models/product.mock";
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { TokenInterceptor } from "../interceptors/token.interceptor";
+import { TokenService } from "./token.service";
 fdescribe('ProductsService', () => {
   let productService: ProductsService;
   let httpTestingController: HttpTestingController;
@@ -15,6 +16,7 @@ fdescribe('ProductsService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         ProductsService,
+        TokenService,
         {
           provide: HTTP_INTERCEPTORS,
           useClass: TokenInterceptor,
