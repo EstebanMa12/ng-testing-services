@@ -4,6 +4,8 @@ import { HttpClientTestingModule, HttpTestingController } from "@angular/common/
 import { CreateProductDTO, Product, UpdateProductDTO } from "../models/product.model";
 import { environment } from "../../environments/environment";
 import { generateManyProducts, generateOneProduct } from "../models/product.mock";
+import { HTTP_INTERCEPTORS } from "@angular/common/http";
+import { TokenInterceptor } from "../interceptors/token.interceptor";
 fdescribe('ProductsService', () => {
   let productService: ProductsService;
   let httpTestingController: HttpTestingController;
@@ -11,7 +13,14 @@ fdescribe('ProductsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ProductsService]
+      providers: [
+        ProductsService,
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: TokenInterceptor,
+          multi: true,
+        }
+      ]
     });
     productService = TestBed.inject(ProductsService);
     httpTestingController = TestBed.inject(HttpTestingController);
@@ -348,7 +357,7 @@ fdescribe('ProductsService', () => {
 
     });
 
-    
+
 
 
 

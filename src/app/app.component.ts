@@ -16,7 +16,8 @@ import { Calculator } from './calculator';
     HttpClientModule,
     ReactiveFormsModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.sass'
+  styleUrl: './app.component.sass',
+  
 })
 export class AppComponent {
   title = 'ng-testing-services';
