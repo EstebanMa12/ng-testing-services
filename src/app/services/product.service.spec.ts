@@ -209,14 +209,11 @@ fdescribe('ProductsService', () => {
       const mockData = generateOneProduct();
       const productId = '123';
       const dto: UpdateProductDTO = {
-        title:'title',
-        price: 100,
-        description: 'description',
-        categoryId: 12,
-        images: ['image1', 'image2']
+        title:'title updated',
+        price: 100
       };
-
-      productService.update(productId, dto)
+      // Act
+      productService.update(productId, {...dto})
       .subscribe((data)=>{
         //Assert
         expect(data).toEqual(mockData);
@@ -238,8 +235,7 @@ fdescribe('ProductsService', () => {
   describe('test for delete()',()=>{
     it('should return the deleted product', (doneFn)=>{
       // Arrange
-      const mockData = generateOneProduct();
-      const productId = '123';
+      const productId = '1';
 
       productService.delete(productId)
       .subscribe((data)=>{
@@ -252,7 +248,7 @@ fdescribe('ProductsService', () => {
       const url = `${environment.API_URL}/api/v1/products/${productId}`;
       const req = httpTestingController.expectOne(url);
       // Montar el mock de datos
-      req.flush(mockData);
+      req.flush(true);
 
       expect(req.request.method).toEqual('DELETE');
     })
